@@ -16,9 +16,6 @@ import Control.Monad.Trans.Free
 
 import Glove.Types
 
--- SCREEN INTERACTION
----------------------
-
 data ScreenActionF next 
     = ClearScreen next
     | ColorizeFront Position Color next
