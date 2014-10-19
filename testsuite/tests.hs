@@ -2,6 +2,7 @@ import Test.Hspec
 import Control.Monad.State
 import Glove.Types
 import Glove.Screen
+import Glove.Grid
 
 main = hspec spec
 
@@ -26,9 +27,7 @@ testReinit = do putAt (1,1) '@'
 testConsole = (initConsole black white ' ' 80 60)
 
 runTest f = execState (run f) testConsole
-runAndEvaluateTile p f = let cons = runTest f
-                             grid = _grid cons in
-                             grid !!! p
+runAndEvaluateTile p f = runTest f !!! p
 runRead f = evalState (run f) testConsole
 
 spec = do
