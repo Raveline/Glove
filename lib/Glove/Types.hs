@@ -22,10 +22,15 @@ data Color = Color { _red :: Int
                    , _blue :: Int
                    , _alpha :: Int } deriving (Eq, Show)
 
+black :: Color
 black = Color 0 0 0 0
+white :: Color
 white = Color 255 255 255 0
+red :: Color
 red = Color 255 0 0 0
+green :: Color
 green = Color 0 255 0 0
+blue :: Color
 blue = Color 0 0 255 0
 
 -- |A tile is a part of the screen. It carries
@@ -72,65 +77,9 @@ computeRealScreenRes f s = (computeRealScreenWidth f s
                            ,computeRealScreenHeight f s)
     where
         computeRealScreenWidth :: Font -> Screen -> Width
-        computeRealScreenWidth f s = _sizeW f * _charWidth s
+        computeRealScreenWidth f' s' = _sizeW f' * _charWidth s'
         computeRealScreenHeight :: Font -> Screen -> Height
-        computeRealScreenHeight f s = _sizeH f * _charHeight s
-
--- |Given default values, create a console with an initialized
--- grid using the defaults values.
-initConsole :: BackColor -> ForeColor -> Char -> Width -> Height -> Console
-initConsole b f c w h = let config = ConsoleConfig b f c w h
-                            defGrid = getNewGrid config in
-                            Console config defGrid
-
-cleanGrid :: Console -> Console
-cleanGrid c = let newGrid = getNewGrid . _config $ c in
-                  c { _grid = newGrid }
-
--- |Given a width and a size, a default background color,
--- a default foreground color, a default char, initialize
--- a grid filled with Tiles of the given colors and char.
--- >>> let c = getNewGrid (ConsoleConfig 20 20 black black ' ')
--- >>> c V.! 0 V.! 0 == Tile ' ' black black False
--- True
--- >>> c V.! 19 V.! 19 == Tile ' ' black black False
--- True
-getNewGrid :: ConsoleConfig -> Grid
-getNewGrid (ConsoleConfig b f c w h) = V.replicate h (V.fromList cols)
-    where cols :: [Tile]
-          cols = replicate w (Tile c b f True)
+        computeRealScreenHeight f' s' = _sizeH f' * _charHeight s'
 
 (!!!) :: V.Vector (V.Vector a) -> Position -> a
 v !!! (x,y) = v V.! y V.! x
-
--- |- Map a function f on the element in a 2D vector
---    identified by its position p
-mapOn :: Position                       -- A position
-         -> (a -> a)                    -- A function
-         -> V.Vector (V.Vector a)       -- A 2D vector
-         -> V.Vector (V.Vector a)       -- The new vector
-mapOn (x,y) f v = v V.// [(y, setSubV)]
-    where subV = v V.! y
-          setSubV = subV V.// [(x, f (subV V.! x))]
-
-setOn :: Position -> a -> V.Vector (V.Vector a) -> V.Vector (V.Vector a)
-setOn p t = mapOn p (const t)
-
-colorize :: (Tile -> Tile) -> Position -> Console -> Console
-colorize f p c = let newGrid = mapOn p f . _grid $ c in
-                     c { _grid = newGrid }
-
-setChar :: Char -> Position -> Console -> Console
-setChar ch p c = let newGrid = mapOn p repChar . _grid $ c in
-                    c { _grid = newGrid }
-                where repChar t = t { _character = ch }
-
-setTile :: Tile -> Position -> Console -> Console
-setTile t p c = let newGrid = setOn p t . _grid $ c in
-                    c { _grid = newGrid }
-
-colorizeF :: ForeColor -> Tile -> Tile
-colorizeF f t = t {_foregroundColor = f, _updated = True }
-
-colorizeB :: BackColor -> Tile -> Tile
-colorizeB b t = t {_backgroundColor = b, _updated = True }
