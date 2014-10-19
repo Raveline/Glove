@@ -36,18 +36,3 @@ type Height = Int
 type Position = (Int, Int)
 type ForeColor = Color
 type BackColor = Color
-
--- |Given the used Font and the screen size in char,
--- get the resolution needed for the screen.
--- >>> computeRealScreenRes (Font "" 16 16) (Screen 80 20)
--- (1280,320)
--- >>> computeRealScreenRes (Font "" 12 10) (Screen 40 20)
--- (480,200)
-computeRealScreenRes :: Font -> Screen -> Resolution
-computeRealScreenRes f s = (computeRealScreenWidth f s
-                           ,computeRealScreenHeight f s)
-    where
-        computeRealScreenWidth :: Font -> Screen -> Width
-        computeRealScreenWidth f' s' = _sizeW f' * _charWidth s'
-        computeRealScreenHeight :: Font -> Screen -> Height
-        computeRealScreenHeight f' s' = _sizeH f' * _charHeight s'
