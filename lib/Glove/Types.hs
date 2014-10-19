@@ -2,18 +2,6 @@
 module Glove.Types
 where
 
--- |Config information about the "font" that we will use,
--- namely a bitmap font. Path of the file and size of its
--- characters are needed to compute the size of the screen.
-data Font = Font { _path :: FilePath
-                 , _sizeW :: Width
-                 , _sizeH :: Height }
-
--- |Config information about the logical screen, with a size
--- expressed in number of characters.
-data Screen = Screen { _charWidth :: Width
-                     , _charHeight :: Height }
-
 -- |Classical color representation with RGBA.
 data Color = Color { _red :: Int
                    , _green :: Int
@@ -46,8 +34,6 @@ type Width = Int
 -- |The notion of height (can be expressed in character or pixel)
 type Height = Int
 type Position = (Int, Int)
--- |The real screen resolution (expressed in pixel).
-type Resolution = (Width, Height)
 type ForeColor = Color
 type BackColor = Color
 
