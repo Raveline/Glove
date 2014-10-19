@@ -1,31 +1,20 @@
+-- A series of definition to handle a terminal
 module Glove.Screen
 ( ScreenAction,
-  initConsole,
+  ScreenActionF (..),
   clearScreen,
   colorizeFront,
   colorizeBack,
   putAt,
   readAt,
   rendered,
-  setAt,
-  run )
+  setAt)
+  
 where
 
-import Control.Monad.State
 import Control.Monad.Trans.Free
 
 import Glove.Types
-import Glove.ScreenMechanism
-
--- UTILITIES
----------------------
-
--- |Given default values, create a console with an initialized
--- grid using the defaults values.
-initConsole :: BackColor -> ForeColor -> Char -> Width -> Height -> Console
-initConsole b f c w h = let config = ConsoleConfig b f c w h
-                            defGrid = getNewGrid config in
-                            Console config defGrid
 
 -- SCREEN INTERACTION
 ---------------------
@@ -81,20 +70,3 @@ rendered = liftF $ Rendered ()
 -- |Set every information a given tile.
 setAt :: (Monad m) => Position -> Tile -> ScreenAction m ()
 setAt p t = liftF $ SetAt p t ()
-
--- |Default interpreter. Uses a State Monad and the Data.Vector
--- library to emulate the 2D grid.
-run :: ScreenAction (State Console) next -> ConsoleState next
-run act = runFreeT act >>= run'
-
-run' :: FreeF ScreenActionF next (ScreenAction (State Console) next) -> ConsoleState next
-run' (Pure n)                       = return n
-run' (Free (ClearScreen n))         = get >>= put . cleanGrid >> run n
-run' (Free (ColorizeFront p c n))   = get >>= put . colorize (colorizeF c) p >> run n
-run' (Free (ColorizeBack p c n))    = get >>= put . colorize (colorizeB c) p >> run n
-run' (Free (PutAt p c n))           = get >>= put . setChar c p >> run n
-run' (Free (ReadAt p n))            = do c <- get 
-                                         let t = _grid c !!! p 
-                                         run (n t)
-run' (Free (Rendered n))            = get >>= put . unupdateAll >> run n
-run' (Free (SetAt p t n))           = get >>= put . setTile t p >> run n

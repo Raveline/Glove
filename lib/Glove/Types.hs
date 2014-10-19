@@ -1,8 +1,6 @@
+-- Types used in gloves, mostly definition for Tiles
 module Glove.Types
 where
-
-import Control.Monad.State
-import qualified Data.Vector as V
 
 -- |Config information about the "font" that we will use,
 -- namely a bitmap font. Path of the file and size of its
@@ -43,17 +41,6 @@ data Tile = Tile { _character :: Char
                  , _foregroundColor :: ForeColor
                  , _updated :: Bool } deriving (Eq, Show)
 
-data Console = Console { _config :: ConsoleConfig
-                       , _grid :: Grid }
-
-data ConsoleConfig = ConsoleConfig { _defaultBack :: BackColor
-                                   , _defaultFore :: ForeColor
-                                   , _defaultChar :: Char
-                                   , _width :: Width
-                                   , _height :: Height }
-
--- |A 2D vector of Tiles
-type Grid = V.Vector (V.Vector Tile)
 -- |The notion of width (can be expressed in character or pixel)
 type Width = Int
 -- |The notion of height (can be expressed in character or pixel)
@@ -61,8 +48,6 @@ type Height = Int
 type Position = (Int, Int)
 -- |The real screen resolution (expressed in pixel).
 type Resolution = (Width, Height)
--- |A state allowing us to compose console modifying functions
-type ConsoleState a = State Console a
 type ForeColor = Color
 type BackColor = Color
 
@@ -80,6 +65,3 @@ computeRealScreenRes f s = (computeRealScreenWidth f s
         computeRealScreenWidth f' s' = _sizeW f' * _charWidth s'
         computeRealScreenHeight :: Font -> Screen -> Height
         computeRealScreenHeight f' s' = _sizeH f' * _charHeight s'
-
-(!!!) :: V.Vector (V.Vector a) -> Position -> a
-v !!! (x,y) = v V.! y V.! x
